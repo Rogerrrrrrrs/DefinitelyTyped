@@ -478,3 +478,154 @@ export function getTick(): number;
  * @param endTick      The end of the measured interval. An unsigned integer tick value.
  */
 export function tickDiff(startTick: number, endTick: number): number;
+
+/**
+ * Clears all waveforms and any data added by calls to the waveAdd* functions.
+ */
+export function waveClear(): void;
+
+/**
+ * Starts a new empty waveform.
+ * You wouldn't normally need to call this function as it is automatically called after a waveform is created with the gpioWaveCreate function.
+ */
+export function waveAddNew(): void;
+
+/**
+ * Adds a series of pulses to the current waveform. Returns the new total number of pulses in the current waveform.
+ * Returns the new total number of pulses in the current waveform.
+ * @param pulses an array of pulses objects.
+ * The pulse objects are built with the following properties:
+ * 
+ * gpioOn - an unsigned integer specifying the GPIO number to be turned on.
+ * 
+ * gpioOff - an unsigned integer specifying the GPIO number to be turned off.
+ * 
+ * usDelay - an unsigned integer specifying the pulse length in microseconds.
+ */
+export function waveAddGeneric(pulses: pulses[]): number;
+
+interface pulses {
+    gpioOn: number,
+    gpioOff: number,
+    usDelay: number
+}
+
+/**
+ * Creates a waveform from added data.
+ * Returns a wave id. 
+ * All data previously added with waveAdd* methods get cleared.
+ */
+export function waveCreate(): number;
+
+/**
+ * Deletes a waveform by the given wave id.
+ * @param waveId >=0, as returned by waveCreate
+ */
+export function waveDelete(waveId: number): void;
+
+/**
+ * Transmits a waveform. 
+ * Returns the number of DMA control blocks in the waveform.
+ * The SYNC variants of the waveMode wait for the current waveform to reach the end of a cycle or finish before starting the new waveform.
+ * @param waveId >=0, as returned by waveCreate
+ * @param waveMode WAVE_MODE_ONE_SHOT, WAVE_MODE_REPEAT, WAVE_MODE_ONE_SHOT_SYNC or WAVE_MODE_REPEAT_SYNC
+ */
+export function waveTxSend(waveId: number, waveMode: number): void;
+
+/**
+ * PI_WAVE_MODE_ONE_SHOT
+ * The waveform is sent once.
+ */
+export const WAVE_MODE_ONE_SHOT: number;
+
+/**
+ * PI_WAVE_MODE_REPEAT
+ * The waveform cycles repeatedly.
+ */
+export const WAVE_MODE_REPEAT: number;
+
+/**
+ * PI_WAVE_MODE_ONE_SHOT_SYNC
+ * The waveform is sent once, waiting for the current waveform to finish before starting the new waveform.
+ */
+export const WAVE_MODE_ONE_SHOT_SYNC: number;
+
+/**
+ * PI_WAVE_MODE_REPEAT_SYNC
+ * The waveform cycles repeatedly, waiting for the current waveform to finish before starting the new waveform.
+ */
+export const WAVE_MODE_REPEAT_SYNC: number;
+
+/**
+ * Transmits a chain of waveforms. 
+ * @param chain Array of waves to be transmitted, contains an ordered list of wave_ids and optional command codes and related data
+ * The following command codes are supported:
+ * 
+ * Name | Command & Data | Description |
+ *  ---: | ---: | ---: |
+ * Loop Start | 255 0	| Identify start of a wave block
+ * Loop Repeat	| 255 1 x y	| loop x + y*256 time
+ * Delay	| 255 2 x y	| delay x + y*256 microseconds
+ * Loop Forever |	255 3	| loop forever
+ */
+export function waveChain(waveId: number, waveMode: number): void;
+
+/**
+ * Returns the current transmitting wave id.
+ */
+export function waveTxAt(): number;
+
+/**
+ * Returns 1 if the current waveform is still transmitting, otherwise 0.
+ */
+export function waveTxBusy(): number;
+
+/**
+ * Aborts the current waveform.
+ */
+export function waveTxStop(): void;
+
+/**
+ * Returns the length in microseconds of the current waveform.
+ */
+export function waveGetMicros(): number;
+
+/**
+ * Returns the length in microseconds of the longest waveform created since gpioInitialise was called.
+ */
+export function waveGetHighMicros(): number;
+
+/**
+ * Returns the maximum possible size of a waveform in microseconds.
+ */
+export function waveGetMaxMicros(): number;
+
+/**
+ * Returns the length in pulses of the current waveform.
+ */
+export function waveGetPulses(): number;
+
+/**
+ * Returns the length in pulses of the longest waveform created since gpioInitialise was called.
+ */
+export function waveGetHighPulses(): number;
+
+/**
+ * Returns the maximum possible size of a waveform in pulses.
+ */
+export function waveGetMaxPulses(): number;
+
+/**
+ * Returns the length in DMA control blocks of the current waveform.
+ */
+export function waveGetCbs(): number;
+
+/**
+ * Returns the length in DMA control blocks of the longest waveform created since gpioInitialise was called.
+ */
+export function waveGetHighCbs(): number;
+
+/**
+ * Returns the maximum possible size of a waveform in DMA control blocks.
+ */
+export function waveGetMaxCbs(): number;
