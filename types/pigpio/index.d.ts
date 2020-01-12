@@ -405,6 +405,24 @@ export const CLOCK_PWM: number;
 export const CLOCK_PCM: number;
 
 /**
+ * PI_DISABLE_FIFO_IF
+ * Disables the pipe interface.
+ */
+export const DISABLE_FIFO_IF: number;
+
+/**
+ * PI_DISABLE_SOCK_IF
+ * Disables the socket interface.
+ */
+export const DISABLE_SOCK_IF: number;
+
+/**
+ * PI_LOCALHOST_SOCK_IF
+ * Disables remote socket access (this means that the socket interface is only usable from the local Pi).
+ */
+export const LOCALHOST_SOCK_IF: number;
+
+/**
  * Initialize the pigpio package
  */
 export function initialize(): void;
@@ -434,6 +452,14 @@ export function configureSocketPort(port: number): void;
  * if the hardware revision can not be determined.
  */
 export function hardwareRevision(): number;
+
+/**
+ * Configures pigpio support of the fifo and socket interfaces.
+ * This function is only effective if called before creating Gpio objects.
+ * The default setting (0) is that both interfaces are enabled.
+ * @param ifFlags flags to configure the fifo and socket interfaces. (DISABLE_FIFO_IF, DISABLE_SOCK_IF, LOCALHOST_SOCK_IF)
+ */
+export function configureInterfaces(ifFlags: number): number;
 
 /**
  * Gets the current unsigned 32-bit integer value of the number of microseconds
