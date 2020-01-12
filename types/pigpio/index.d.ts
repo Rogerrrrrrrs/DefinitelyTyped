@@ -462,6 +462,10 @@ export function hardwareRevision(): number;
  */
 export function configureInterfaces(ifFlags: number): number;
 
+/************************************
+ * Global
+ ************************************/
+
 /**
  * Gets the current unsigned 32-bit integer value of the number of microseconds
  * since system boot. This value wraps around the 32-bit space in just over an hour.
