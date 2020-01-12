@@ -922,3 +922,201 @@ import * as assert from 'assert';
         process.exit(0);
     }, 1000);
 })();
+
+
+(function wave_add(): void {
+    const Gpio = pigpio.Gpio;
+    pigpio.configureClock(1, pigpio.CLOCK_PCM);
+
+    const iterations = 100;
+
+    const outPin = 17;
+    const output = new Gpio(outPin, {mode: Gpio.OUTPUT});
+
+    output.digitalWrite(0);
+    pigpio.waveClear();
+    
+    let waveform: pigpio.pulses[] = [];
+    let result: number[][] = [];
+
+    for (let x = 0; x < iterations; x++) {
+        if (x % 2 === 0) {
+            waveform.push({ gpioOn: outPin, gpioOff: 0, usDelay: x + 10 });
+        } else {
+            waveform.push({ gpioOn: 0, gpioOff: outPin, usDelay: x + 10 });
+        }
+    }
+
+    pigpio.waveAddGeneric(waveform);
+
+    let waveId = pigpio.waveCreate();
+
+    output.enableAlert();
+
+    output.on('alert', (level, tick) => {
+    result.push([level, tick]);
+    if (result.length === iterations) {
+        for (let r = 0; r < result.length; r++) {
+            if (result[r + 1] !== undefined) {
+                assert.strictEqual(result[r][0], (waveform[r].gpioOn !== 0 ? 1 : 0), 'Waves level mismatch');
+                assert.strictEqual(Math.abs(waveform[r].usDelay - pigpio.tickDiff(result[r][1], result[r + 1][1])) < 10, true, 'Waves tick mismatch');
+            } else {
+                console.log('wave-add test passed.');
+            }
+        }
+        output.disableAlert();
+    }
+    });
+
+    if (waveId >= 0) {
+        pigpio.waveTxSend(waveId, pigpio.WAVE_MODE_ONE_SHOT);
+    }
+
+    while (pigpio.waveTxBusy()) {}
+
+    pigpio.waveDelete(waveId);
+})();
+
+(function wave_chain(): void {
+    const Gpio = pigpio.Gpio;
+
+    pigpio.configureClock(1, pigpio.CLOCK_PCM);
+
+    const iterations = 20;
+    const repetitions = 3;
+    const delay = 10;
+
+    const outPin = 17;
+    const output = new Gpio(outPin, {mode: Gpio.OUTPUT});
+
+    output.digitalWrite(0);
+    pigpio.waveClear();
+
+    let firstWaveForm: pigpio.pulses[] = [];
+    let secondWaveForm: pigpio.pulses[] = [];
+    let result: number[][] = [];
+
+    for (let x = 0; x < iterations; x++) {
+        if (x % 2 === 0) {
+            firstWaveForm.push({ gpioOn: outPin, gpioOff: 0, usDelay: delay });
+        } else {
+            firstWaveForm.push({ gpioOn: 0, gpioOff: outPin, usDelay: delay });
+        }
+    }
+
+    pigpio.waveAddGeneric(firstWaveForm);
+    let firstWaveId = pigpio.waveCreate();
+
+    for (let x = 0; x < iterations; x++) {
+        if (x % 2 === 0) {
+            secondWaveForm.push({ gpioOn: outPin, gpioOff: 0, usDelay: delay });
+        } else {
+            secondWaveForm.push({ gpioOn: 0, gpioOff: outPin, usDelay: delay });
+        }
+    }
+
+    pigpio.waveAddGeneric(secondWaveForm);
+    let secondWaveId = pigpio.waveCreate();
+
+    output.enableAlert();
+
+    output.on('alert', (level, tick) => {
+    result.push([level, tick]);
+    if (result.length === iterations + (iterations * repetitions)) {
+        for (let r = 0; r < result.length; r++) {
+            if (result[r + 1] !== undefined) {
+                assert.strictEqual(Math.abs(delay - pigpio.tickDiff(result[r][1], result[r + 1][1])) < 10, true, 'Waves tick mismatch');
+            } else {
+                console.log('wave-chain test passed.');
+            }
+        }
+        output.disableAlert();
+    }
+    });
+
+    if (firstWaveId >= 0 && secondWaveId >= 0) {
+        pigpio.waveChain([firstWaveId, 255, 0, secondWaveId, 255, 1, repetitions, 0]);
+    }
+
+    while (pigpio.waveTxBusy()) {}
+
+    pigpio.waveDelete(firstWaveId);
+    pigpio.waveDelete(secondWaveId);
+})();
+
+(function waves(): void {
+    const Gpio = pigpio.Gpio;
+
+    const iterations = 20;
+    const delay = 1000;
+    
+    const outPin = 17;
+    const output = new Gpio(outPin, {mode: Gpio.OUTPUT});
+    
+    output.digitalWrite(0);
+    pigpio.waveClear();
+    
+    let waveform: pigpio.pulses[] = [];
+    
+    for (let x = 0; x < iterations; x++) {
+      if (x % 2 === 0) {
+        waveform.push({ gpioOn: outPin, gpioOff: 0, usDelay: delay });
+      } else {
+        waveform.push({ gpioOn: 0, gpioOff: outPin, usDelay: delay });
+      }
+    }
+    
+    let waveLength = pigpio.waveAddGeneric(waveform);
+    
+    assert.strictEqual(waveLength, waveform.length, 'waveAddGeneric');
+    
+    let waveId = pigpio.waveCreate();
+    
+    assert.strictEqual(waveId, 0, 'waveCreate'); // waveId should be 0 at this point
+    
+    pigpio.waveDelete(waveId);
+    
+    
+    // Create new waveform
+    
+    pigpio.waveAddGeneric(waveform);
+    
+    let secondWaveId = pigpio.waveCreate();
+    
+    assert.strictEqual(secondWaveId, 0, 'waveDelete'); // waveId should be 0 again because old wave got deleted
+    
+    assert.strictEqual(pigpio.waveGetMicros(), iterations * delay, 'waveGetMicros');
+    assert.strictEqual(pigpio.waveGetHighMicros(), iterations * delay, 'waveGetHighMicros');
+    assert.strictEqual(typeof pigpio.waveGetMaxMicros(), 'number', 'waveGetMaxMicros');
+    assert.strictEqual(pigpio.waveGetPulses(), iterations, 'waveGetPulses');
+    assert.strictEqual(pigpio.waveGetHighPulses(), iterations, 'waveGetHighPulses');
+    assert.strictEqual(typeof pigpio.waveGetMaxPulses(), 'number', 'waveGetMaxPulses');
+    assert.strictEqual(pigpio.waveGetCbs(), iterations * 2, 'waveGetCbs');
+    assert.strictEqual(pigpio.waveGetHighCbs(), iterations * 2, 'waveGetHighCbs');
+    assert.strictEqual(typeof pigpio.waveGetMaxCbs(), 'number', 'waveGetMaxCbs');
+    
+    if (waveId === 0) {
+      pigpio.waveTxSend(secondWaveId, pigpio.WAVE_MODE_REPEAT);
+    }
+    
+    assert.strictEqual(pigpio.waveTxBusy(), 1, 'waveTxBusy');
+    
+    while (pigpio.waveTxBusy()) {
+      assert.strictEqual(pigpio.waveTxAt(), secondWaveId, 'waveTxAt');
+      pigpio.waveTxStop();
+    }
+    
+    
+    // Create new waveform
+    
+    pigpio.waveClear();
+    
+    pigpio.waveAddGeneric(waveform);
+    
+    let thirdWaveId = pigpio.waveCreate();
+    
+    assert.strictEqual(thirdWaveId, 0, 'waveClear'); // waveId should be 0 again because waves got cleared
+    
+    console.log('waves test passed');
+        
+})();
