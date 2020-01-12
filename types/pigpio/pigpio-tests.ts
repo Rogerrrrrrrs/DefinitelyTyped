@@ -1118,5 +1118,4 @@ import * as assert from 'assert';
     assert.strictEqual(thirdWaveId, 0, 'waveClear'); // waveId should be 0 again because waves got cleared
     
     console.log('waves test passed');
-        
 })();
