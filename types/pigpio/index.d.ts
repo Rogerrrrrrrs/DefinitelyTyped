@@ -1,4 +1,4 @@
-// Type definitions for pigpio 3.0.0
+// Type definitions for pigpio 3.0
 // Project: https://github.com/fivdi/pigpio
 // Definitions by: ManerFan <https://github.com/manerfan>
 //                 erikma <https://github.com/erikma>
@@ -496,24 +496,24 @@ export function waveAddNew(): void;
  * Returns the new total number of pulses in the current waveform.
  * @param pulses an array of pulses objects.
  * The pulse objects are built with the following properties:
- * 
+ *
  * gpioOn - an unsigned integer specifying the GPIO number to be turned on.
- * 
+ *
  * gpioOff - an unsigned integer specifying the GPIO number to be turned off.
- * 
+ *
  * usDelay - an unsigned integer specifying the pulse length in microseconds.
  */
 export function waveAddGeneric(pulses: pulses[]): number;
 
-interface pulses {
-    gpioOn: number,
-    gpioOff: number,
-    usDelay: number
+export interface pulses {
+    gpioOn: number;
+    gpioOff: number;
+    usDelay: number;
 }
 
 /**
  * Creates a waveform from added data.
- * Returns a wave id. 
+ * Returns a wave id.
  * All data previously added with waveAdd* methods get cleared.
  */
 export function waveCreate(): number;
@@ -525,7 +525,7 @@ export function waveCreate(): number;
 export function waveDelete(waveId: number): void;
 
 /**
- * Transmits a waveform. 
+ * Transmits a waveform.
  * Returns the number of DMA control blocks in the waveform.
  * The SYNC variants of the waveMode wait for the current waveform to reach the end of a cycle or finish before starting the new waveform.
  * @param waveId >=0, as returned by waveCreate
@@ -558,10 +558,10 @@ export const WAVE_MODE_ONE_SHOT_SYNC: number;
 export const WAVE_MODE_REPEAT_SYNC: number;
 
 /**
- * Transmits a chain of waveforms. 
+ * Transmits a chain of waveforms.
  * @param chain Array of waves to be transmitted, contains an ordered list of wave_ids and optional command codes and related data
  * The following command codes are supported:
- * 
+ *
  * Name | Command & Data | Description |
  *  ---: | ---: | ---: |
  * Loop Start | 255 0	| Identify start of a wave block
