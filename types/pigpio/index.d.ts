@@ -569,7 +569,7 @@ export const WAVE_MODE_REPEAT_SYNC: number;
  * Delay	| 255 2 x y	| delay x + y*256 microseconds
  * Loop Forever |	255 3	| loop forever
  */
-export function waveChain(chain: number[]): void;
+export function waveChain(chain: ReadonlyArray<number>): void;
 
 /**
  * Returns the current transmitting wave id.
