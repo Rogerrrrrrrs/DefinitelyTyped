@@ -1,4 +1,4 @@
-// Type definitions for pigpio 1.2
+// Type definitions for pigpio 3.0.0
 // Project: https://github.com/fivdi/pigpio
 // Definitions by: ManerFan <https://github.com/manerfan>
 //                 erikma <https://github.com/erikma>
