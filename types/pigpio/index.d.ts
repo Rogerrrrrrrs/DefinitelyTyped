@@ -491,7 +491,7 @@ export function waveClear(): void;
 
 /**
  * Starts a new empty waveform.
- * You wouldn't normally need to call this function as it is automatically called after a waveform is created with the gpioWaveCreate function.
+ * You wouldn't normally need to call this function as it is automatically called after a waveform is created with the waveCreate function.
  */
 export function waveAddNew(): void;
 
