@@ -180,6 +180,30 @@ export class Gpio extends EventEmitter {
      */
     glitchFilter(steady: number): Gpio;
 
+    /**
+     * Opens a GPIO for bit bang reading of serial data. Returns this.
+     * @param baud    an unsigned integer from 50 - 250000, specifies the baud rate.
+     * @param dataBits    an unsigned integer from 1 - 32, number of data bits.
+     */
+    serialReadOpen(baud: number, dataBits: number): Gpio;
+
+    /**
+     * Configures the level logic for bit bang serial readings. Returns this.
+     * @param invert    if the level should be inverted or not, 1 or 0
+     */
+    serialReadInvert(invert: 0 | 1): Gpio;
+
+    /**
+     * Returns up to 8192 bytes of serialdata as an Uint8Array read by the gpio.
+     * @param bytes    How many bytes you want to read. 1 - 8192, Defaults to 8192.
+     */
+    serialRead(bytes: number): Uint8Array;
+
+    /**
+     * Closes a GPIO for bit bang reading of serial data. Returns this.
+     */
+    serialReadClose(bytes: number): Gpio;
+
     /*----------------------*
      * mode
      *----------------------*/
