@@ -197,7 +197,7 @@ export class Gpio extends EventEmitter {
      * Returns up to 8192 bytes of serialdata as an Uint8Array read by the gpio.
      * @param bytes    How many bytes you want to read. 1 - 8192, Defaults to 8192.
      */
-    serialRead(bytes: number): Uint8Array;
+    serialRead(bytes?: number): Uint8Array;
 
     /**
      * Closes a GPIO for bit bang reading of serial data. Returns this.
