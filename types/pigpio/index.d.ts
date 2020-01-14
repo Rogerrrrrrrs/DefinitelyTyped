@@ -525,13 +525,23 @@ export function waveAddNew(): void;
  * @param pulses an array of pulses objects.
  * The pulse objects are built with the following properties:
  *
- * gpioOn - an unsigned integer specifying the GPIO number to be turned on.
+ * gpioOn     an unsigned integer specifying the GPIO number to be turned on.
  *
- * gpioOff - an unsigned integer specifying the GPIO number to be turned off.
+ * gpioOff    an unsigned integer specifying the GPIO number to be turned off.
  *
- * usDelay - an unsigned integer specifying the pulse length in microseconds.
+ * usDelay    an unsigned integer specifying the pulse length in microseconds.
  */
 export function waveAddGeneric(pulses: pulses[]): number;
+
+/**
+ * Adds a waveform representing serial data to the existing waveform. Returns the new total number of pulses in the current waveform.
+ * @param baud        an unsigned integer from 50 - 1000000, specifies the baud rate.
+ * @param dataBits    an unsigned integer from 1 - 32, number of data bits.
+ * @param stopBits    an unsigned integer from 1 - 4, number of stop bits.
+ * @param offset      an unsigned integer >= 0, the serial data starts `offset` microseconds from the start of the waveform.
+ * @param message     a string, the Message to be sent.
+ */
+export function waveAddSerial(baud: number, dataBits: number, stopBits: number, offset: number, message: string): number;
 
 export interface pulses {
     gpioOn: number;
