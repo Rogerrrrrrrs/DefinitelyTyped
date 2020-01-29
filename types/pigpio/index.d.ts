@@ -535,13 +535,14 @@ export function waveAddGeneric(pulses: pulses[]): number;
 
 /**
  * Adds a waveform representing serial data to the existing waveform. Returns the new total number of pulses in the current waveform.
+ * @param gpio        an unsigned integer that specifies the GPIO number used to send the serial data
  * @param baud        an unsigned integer from 50 - 1000000, specifies the baud rate.
  * @param dataBits    an unsigned integer from 1 - 32, number of data bits.
  * @param stopBits    an unsigned integer from 1 - 4, number of stop bits.
  * @param offset      an unsigned integer >= 0, the serial data starts `offset` microseconds from the start of the waveform.
  * @param message     a string, the Message to be sent.
  */
-export function waveAddSerial(baud: number, dataBits: number, stopBits: number, offset: number, message: string): number;
+export function waveAddSerial(gpio: number, baud: number, dataBits: number, stopBits: number, offset: number, message: string): number;
 
 export interface pulses {
     gpioOn: number;
